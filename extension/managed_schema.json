@@ -1,0 +1,20 @@
+{
+  "type": "object",
+  "properties": {
+    "hideOverviews": {
+      "title": "Hide AI Overviews",
+      "description": "Hide the AI Overview box at the top of Google Search results. Default: true.",
+      "type": "boolean"
+    },
+    "hideAiMode": {
+      "title": "Hide and block AI Mode",
+      "description": "Hide the AI Mode tab/button and send AI Mode (udm=50) links back to normal search. Default: true.",
+      "type": "boolean"
+    },
+    "forceWebResults": {
+      "title": "Force plain Web results",
+      "description": "Rewrite ordinary searches to Google's 'Web' view (udm=14), which never shows AI Overviews. Removes some other widgets too. Default: false.",
+      "type": "boolean"
+    }
+  }
+}

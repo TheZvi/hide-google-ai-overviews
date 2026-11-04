@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Hide Google AI Overviews</title>
+  <style>
+    :root { color-scheme: light dark; --fg: #1f1f1f; --muted: #5f6368; --bg: #fff; --line: #dadce0; }
+    @media (prefers-color-scheme: dark) { :root { --fg: #e8eaed; --muted: #9aa0a6; --bg: #202124; --line: #3c4043; } }
+    body { font: 14px/1.45 system-ui, sans-serif; color: var(--fg); background: var(--bg); margin: 0; padding: 16px; min-width: 300px; max-width: 420px; }
+    h1 { font-size: 16px; margin: 0 0 12px; }
+    label { display: flex; gap: 10px; align-items: flex-start; padding: 10px 0; border-top: 1px solid var(--line); cursor: pointer; }
+    label.locked { cursor: default; opacity: .75; }
+    input { margin-top: 3px; }
+    small { display: block; color: var(--muted); }
+    #managed { display: none; margin-top: 12px; color: var(--muted); font-size: 12px; }
+  </style>
+</head>
+<body>
+  <h1>Hide Google AI Overviews</h1>
+  <label><input type="checkbox" id="hideOverviews"><span>Hide AI Overviews<small>Removes the AI Overview box from search results.</small></span></label>
+  <label><input type="checkbox" id="hideAiMode"><span>Hide &amp; block AI Mode<small>Hides the AI Mode tab and button; AI Mode links go to normal search instead.</small></span></label>
+  <label><input type="checkbox" id="forceWebResults"><span>Always use plain "Web" results<small>Google's text-only results view. Most reliable, but also drops some other boxes (maps, knowledge panels).</small></span></label>
+  <p id="managed">Some settings are managed by your organization and can't be changed here.</p>
+  <p style="margin-top:14px;font-size:12px"><a href="https://github.com/TheZvi/hide-google-ai-overviews/issues/new?template=broken.yml" target="_blank" rel="noopener">AI Overviews showing again? Report it</a></p>
+  <script src="options.js"></script>
+</body>
+</html>

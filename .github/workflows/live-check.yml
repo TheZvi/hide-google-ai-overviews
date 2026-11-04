@@ -1,0 +1,62 @@
+# Daily canary against real Google. If an AI Overview shows through, it opens (or updates)
+# an issue labelled "broken", which triggers the auto-fix workflow.
+# Google usually serves a CAPTCHA to GitHub's datacenter IPs; that counts as "blocked"
+# (inconclusive), not as a failure. The "broken" issue template is the main backstop.
+name: Live check
+on:
+  schedule: [{ cron: "17 13 * * *" }]
+  workflow_dispatch:
+permissions:
+  contents: write
+  issues: write
+jobs:
+  live:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 22, cache: npm }
+      - run: npm ci
+      - run: npx playwright install --with-deps chromium
+      - name: Run live check
+        id: check
+        run: |
+          npm run live-check || true
+          echo "verdict=$(node -p "require('./live-check-output/result.json').verdict")" >> "$GITHUB_OUTPUT"
+      - uses: actions/upload-artifact@v4
+        with: { name: live-check-output, path: live-check-output, retention-days: 30 }
+      - name: Open or update "broken" issue
+        if: steps.check.outputs.verdict == 'broken'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: |
+          gh label create broken --color d93025 --description "Extension no longer hides AI Overviews" 2>/dev/null || true
+          {
+            echo "The daily live check found an AI Overview visible despite the extension."
+            echo
+            echo "Run: $RUN_URL (download the \`live-check-output\` artifact for screenshots and page HTML)"
+            echo
+            echo '```json'
+            cat live-check-output/result.json
+            echo '```'
+          } > body.md
+          existing=$(gh issue list --label broken --state open --json number -q '.[0].number')
+          if [ -n "$existing" ]; then
+            gh issue comment "$existing" --body-file body.md
+          else
+            gh issue create --title "Live check: AI Overviews are showing again" --label broken --body-file body.md
+          fi
+      - name: Record status (also keeps this scheduled workflow from being auto-disabled)
+        run: |
+          verdict="${{ steps.check.outputs.verdict }}"
+          old=$(node -p "try{require('./live-status.json').verdict}catch(e){''}")
+          last=$(git log -1 --format=%ct -- live-status.json); now=$(date +%s)
+          if [ "$old" != "$verdict" ] || [ $((now - ${last:-0})) -gt 2592000 ]; then
+            node -e "const r=require('./live-check-output/result.json'); require('fs').writeFileSync('live-status.json', JSON.stringify({verdict:r.verdict, checkedAt:r.checkedAt, hidden:r.hidden, visible:r.visible, blocked:r.blocked}, null, 2)+'\n')"
+            git config user.name "github-actions[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git add live-status.json
+            git commit -m "Live check: $verdict"
+            git push
+          fi

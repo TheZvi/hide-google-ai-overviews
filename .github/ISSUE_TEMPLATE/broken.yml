@@ -1,0 +1,25 @@
+name: AI Overviews are showing again
+description: The extension stopped hiding the AI Overview or AI Mode
+labels: [broken]
+body:
+  - type: input
+    id: query
+    attributes:
+      label: A search that showed an AI Overview
+      placeholder: why is the sky blue
+    validations:
+      required: true
+  - type: input
+    id: domain
+    attributes:
+      label: Google domain and language
+      placeholder: google.com, English
+  - type: textarea
+    id: html
+    attributes:
+      label: Page HTML (optional, but it makes an automatic fix much more likely)
+      description: On the results page press Ctrl+S, choose "Webpage, HTML Only", zip it and attach it here. Remove anything personal first.
+  - type: textarea
+    id: screenshot
+    attributes:
+      label: Screenshot

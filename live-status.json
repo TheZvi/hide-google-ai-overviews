@@ -1,7 +1,7 @@
 {
-  "verdict": "working",
-  "checkedAt": "2026-11-22T20:23:02.955Z",
-  "hidden": 1,
+  "verdict": "blocked",
+  "checkedAt": "2026-11-24T00:57:03.247Z",
+  "hidden": 0,
   "visible": 0,
-  "blocked": 5
+  "blocked": 6
 }
